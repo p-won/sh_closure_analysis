@@ -5,8 +5,9 @@ import pandas as pd
 df_floating = pd.read_csv('길단위인구-자치구.csv', encoding='UTF-8')
 df_worker = pd.read_csv('직장인구-행정동.csv', encoding='UTF-8')
 df_franchise = pd.read_csv('annual_franchise_ratio.csv', encoding='UTF-8')
+df_rent = pd.read_csv('annual_rent.csv', encoding='UTF-8')
 
-'''
+
 # 자치구별 유동인구 정리
 df_floating.info()
 print(df_floating.head())
@@ -53,6 +54,8 @@ column_order = [
 df_floating_preprocess = df_floating_preprocess[column_order]
 
 print(df_floating_preprocess.head())
+
+df_floating_preprocess = df_floating_preprocess[~df_floating_preprocess['기준년도'].isin([2024, 2025])]
 
 # csv로 저장
 df_floating_preprocess.to_csv('df_floating_preprocess.csv', index=False, encoding='utf-8')
@@ -161,9 +164,11 @@ column_order = [
 
 df_worker_preprocess = df_worker_preprocess[column_order]
 
+df_worker_preprocess = df_worker_preprocess[ ~df_worker_preprocess['기준년도'].isin([2024, 2025])]
+
 # CSV 저장
 df_worker_preprocess.to_csv('df_worker_preprocess.csv', index=False, encoding='utf-8')
-'''
+
 
 # 프랜차이즈 비율 데이터 형식 변환
 df_franchise.info()
@@ -200,3 +205,29 @@ df_franchise_preprocess.to_csv('df_franchise_preprocess.csv', index=False, encod
 print(df_franchise_preprocess.head(20))
 print(f"\n행 수: {len(df_franchise_preprocess)}")
 
+
+# 임대료 데이터 형식 변환
+df_rent.info()
+print(df_rent.head())
+
+df_rent_preprocess = (
+    df_rent.rename(columns={'자치구': '자치구명'})
+      .melt(id_vars='자치구명', var_name='항목', value_name='임대료')
+      .assign(
+          기준년도=lambda x: x['항목'].str.extract(r'(\d{4})').astype(int),
+          구분=lambda x: x['항목'].str.extract(r'_(.*)')
+      )
+      .query('기준년도 != 2019')
+      .pivot(index=['기준년도', '자치구명'], columns='구분', values='임대료')
+      .reset_index()
+      .rename(columns={
+          '전체': '전체 임대료',
+          '1층': '1층 임대료',
+          '1층외': '1층외 임대료'
+      })
+)
+
+print(df_rent_preprocess.head())
+
+df_rent_preprocess.to_csv('df_rent_preprocess.csv', index=False, encoding='utf-8')
+print(df_rent_preprocess.head())

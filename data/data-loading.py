@@ -99,3 +99,5 @@ df_growth = (df_growth.drop(columns='기준연도').groupby('자치구명', as_i
 
 print("======1인 가구 증가에 따른 폐업률 보기=======")
 print(df_growth[['자치구명', 'sh_closure_growth_ratio']].sort_values( by='sh_closure_growth_ratio',ascending=False))
+
+df_growth.to_csv('df_growth.csv', index=False, encoding='utf-8')
