@@ -94,6 +94,10 @@ df_growth['sh_closure_growth_ratio'] = (
     df_growth['1인가구비중_증가율']
 )
 df_growth = df_growth[df_growth['기준연도'] != 2019]
+
+# 년도별 행 저장 (평균 내기 전, 25구 x 4년 = 100행)
+df_growth[['자치구명', '기준연도', '1인가구_비중', '1인가구비중_증가율', '폐업_증가율', 'sh_closure_growth_ratio']].to_csv('df_growth_year.csv', index=False, encoding='utf-8')
+
 df_growth = (df_growth.drop(columns='기준연도').groupby('자치구명', as_index=False).mean())
 
 print("======1인 가구 증가에 따른 폐업률 보기=======")
