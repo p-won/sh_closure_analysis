@@ -7,13 +7,13 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # 데이터 로드
-df_growth = pd.read_csv('../data/df_growth_year.csv')
+df_byyear = pd.read_csv('../data/df_growth_byyear.csv')
 df_merge = pd.read_csv('../data/df_merge_ver.csv')
 
-# 필요한 컬럼만 추출 후 조인
-df_growth = df_growth[['자치구명', '기준연도', 'sh_closure_growth_ratio']]
+# 조인 (년도 + 구명 기준)
 df_merge = df_merge.rename(columns={'기준년도': '기준연도'})
-df = df_merge.merge(df_growth, on=['자치구명', '기준연도'], how='inner')
+df = df_merge.merge(df_byyear[['자치구명', '기준연도', '1인가구비율', '폐업점포비율']],
+                    on=['자치구명', '기준연도'], how='inner')
 
 print(f"병합 결과: {df.shape[0]}행, {df.shape[1]}열")
 
@@ -30,15 +30,18 @@ df['50대_직장_비율'] = df['연령대_50_직장_인구_수'] / df['총_직�
 df['60대이상_직장_비율'] = df['연령대_60_이상_직장_인구_수'] / df['총_직장_인구_수']
 
 feature_cols = [
+    '1인가구비율',
     '총_유동인구_수', '총_직장_인구_수',
     '20대_유동_비율', '30대_유동_비율', '40대_유동_비율', '50대_유동_비율', '60대이상_유동_비율',
     '20대_직장_비율', '30대_직장_비율', '40대_직장_비율', '50대_직장_비율', '60대이상_직장_비율',
-    '1층 임대료', '1층외 임대료', '전체점포수', '프랜차이즈비율(%)'
+    '1층 임대료', '1층외 임대료', '전체점포수', '프랜차이즈비율(%)', '영역_면적_평균'
 ]
 
-df_model = df[feature_cols + ['sh_closure_growth_ratio']].dropna()
+target_col = '폐업점포비율'
+
+df_model = df[feature_cols + [target_col]].dropna()
 X = df_model[feature_cols]
-y = df_model['sh_closure_growth_ratio']
+y = df_model[target_col]
 
 # 표준화
 scaler = StandardScaler()

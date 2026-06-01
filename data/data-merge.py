@@ -24,4 +24,11 @@ df_merge_ver = (
 )
 
 print(df_merge_ver.head())
+
+# 영역_면적_평균 추가 (관광특구 제외, 25개 구 기준)
+df_area = pd.read_csv('seoul_commercial_area_by_gu.csv', encoding='UTF-8-sig')
+df_area = df_area[~df_area['구명'].str.contains('관광특구')][['구명', '영역_면적_평균']]
+df_area = df_area.rename(columns={'구명': '자치구명'})
+df_merge_ver = df_merge_ver.merge(df_area, on='자치구명', how='left')
+
 df_merge_ver.to_csv('df_merge_ver.csv', index=False, encoding='utf-8')
