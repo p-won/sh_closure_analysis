@@ -3,6 +3,13 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/data/data_merge.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/df_floating_preprocess.csv">
           <value>
             <Attribute>
@@ -24,28 +31,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="/data/df_merge_ver.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/data/df_rent_preprocess.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="/data/df_worker_preprocess.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/data/raw data/1인가구_성별_연령.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -66,21 +52,21 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="/data/raw data/길단위인구-자치구.csv">
+        <entry key="/data/raw data/길단위인구-자치구-201901_202601.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="/data/raw data/상주인구_자치구.csv">
+        <entry key="/data/raw data/상주인구-자치구-201901_202601.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="/data/raw data/직장인구-행정동.csv">
+        <entry key="/data/raw data/직장인구-행정동-201901_202601.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
