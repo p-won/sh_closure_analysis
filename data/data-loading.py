@@ -41,7 +41,14 @@ df_food = df_store[df_store['서비스_업종_코드_명'].isin(target_stores)][
     ['기준_년분기_코드', '자치구_코드_명', '전체_점포_수', '폐업_점포_수']].copy()
 df_food['기준연도'] = df_food['기준_년분기_코드'].astype(str).str[:4].astype(int)
 df_food = df_food[(df_food['기준연도'] >= 2019) & (df_food['기준연도'] <= 2025)]
-df_food = df_food.groupby(['자치구_코드_명', '기준연도'], as_index=False).agg({
+
+# 1단계: 분기별 업종 합산
+df_food_q = df_food.groupby(['자치구_코드_명', '기준_년분기_코드', '기준연도'], as_index=False).agg({
+    '전체_점포_수': 'sum',
+    '폐업_점포_수': 'sum'
+})
+# 2단계: 연간 집계 (점포수는 분기 평균, 폐업수는 분기 합산)
+df_food = df_food_q.groupby(['자치구_코드_명', '기준연도'], as_index=False).agg({
     '전체_점포_수': 'mean',
     '폐업_점포_수': 'sum'
 })
@@ -66,12 +73,23 @@ df_growth['폐업_증가율'] = df_growth.groupby('자치구명')['폐업_점포
 df_growth['sh_closure_growth_ratio'] = (
     df_growth['폐업_증가율'] / df_growth['1인가구비중_증가율']
 )
+# ratio 대신 차이값 사용: 부호 착시 및 이상치 문제 해소
+df_growth['sensitivity_diff'] = df_growth['폐업_증가율'] - df_growth['1인가구비중_증가율']
 
 df_growth = df_growth[df_growth['기준연도'] != 2019]
+
+# 연도별 전체 데이터 저장
+df_growth_yearly = df_growth[['기준연도', '자치구명', '총_가구_수', '1인_가구_수', '점포_수', '폐업_점포_수',
+                               '1인가구_비중', '1인가구비중_증가율', '폐업_증가율',
+                               'sh_closure_growth_ratio', 'sensitivity_diff']]
+df_growth_yearly.to_csv('df_growth_yearly.csv', index=False, encoding='utf-8-sig')
+print("✔ df_growth_yearly.csv 저장 완료")
+
+# 자치구별 평균
 df_growth = df_growth.drop(columns='기준연도').groupby('자치구명', as_index=False).mean()
 
-print("======1인 가구 증가에 따른 폐업률 보기=======")
-print(df_growth[['자치구명', 'sh_closure_growth_ratio']].sort_values(by='sh_closure_growth_ratio', ascending=False))
+print("======sensitivity_diff 기준 폐업 민감도=======")
+print(df_growth[['자치구명', 'sensitivity_diff']].sort_values(by='sensitivity_diff', ascending=False))
 
 df_growth.to_csv('df_growth.csv', index=False, encoding='utf-8')
 print("\n✔ df_growth.csv 저장 완료")
